@@ -4,6 +4,7 @@ IMAGE ?= hybvio
 DOCKERFILE ?= Dockerfile
 
 DOCKERNAME = "${ORG}/${IMAGE}:${TAG}"
+CONTAINER = "${IMAGE}_container"
 
 .PHONY: build
 build:
@@ -11,8 +12,12 @@ build:
 
 .PHONY: run
 run:
-	sudo sh +x run.sh
+	sh +x run.sh
 
 .PHONY: attach
 attach:
-	sudo docker exec -it dazzling_burnell bash
+	docker exec -it "${CONTAINER}" bash
+
+.PHONY: clean
+clean:
+	docker kill $$(docker ps -q)

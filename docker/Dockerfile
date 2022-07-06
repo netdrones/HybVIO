@@ -9,11 +9,14 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
 	vim \
 	curl \
 	wget \
+	file \
 	clang \
 	cmake \
 	ffmpeg \
+	unzip \
 	python-dev \
 	python3-dev \
+	python3-pip \
 	libglfw3 \
 	libglfw3-dev \
 	libgtk-3-dev \
@@ -38,9 +41,17 @@ RUN git clone --recursive https://github.com/SpectacularAI/HybVIO.git \
 	&& mkdir target \
 	&& cd target \
 	&& CC=clang CXX=clang++ cmake -DBUILD_VISUALIZATIONS=ON -DUSE_SLAM=ON .. \
-	&& make -j$(nproc)
+	&& make -j$(nproc) \
+	&& cd .. && ./src/slam/download_orb_vocab.sh
 
-RUN cd HybVIO && ./src/slam/download_orb_vocab.sh
+RUN pip3 install pyyaml numpy
+
+RUN git clone https://github.com/AaltoML/vio_benchmark \
+	&& cd vio_benchmark \
+	&& python3 convert/euroc_to_benchmark.py \
+	&& rm -rf data/raw \
+	&& cd ../HybVIO && mkdir -p data && cd data \
+	&& ln -s ../../vio_benchmark/data/benchmark .
 
 COPY --chmod=755 ./docker-entrypoint.sh /root/docker-entrypoint.sh
 

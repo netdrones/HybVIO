@@ -3,12 +3,13 @@
 # UI permissions
 XSOCK=/tmp/.X11-unix
 XAUTH=/tmp/.docker.xauth
+CONTAINER_NAME=hybvio_container
 touch $XAUTH
 xauth nlist $DISPLAY | sed -e 's/^..../ffff/' | xauth -f $XAUTH nmerge -
 
 xhost +local:root
 
-docker run -it --rm --privileged --net=host --ipc=host \
+docker run -it --rm --privileged -d --net=host --ipc=host \
 	--gpus=all \
 	-e "DISPLAY=$DISPLAY" \
 	-e "QT_X11NO_MITSHM=1" \
@@ -16,6 +17,7 @@ docker run -it --rm --privileged --net=host --ipc=host \
 	-e "XAUTHORITY=$XAUTH" \
 	-e ROS_IP=127.0.0.1 \
 	--cap-add=SYS_PTRACE \
-	ghcr.io/netdrones/plvio:latest
+	--name="$CONTAINER_NAME" \
+	ghcr.io/netdrones/hybvio:latest
 
 xhost -local:root
