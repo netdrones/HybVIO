@@ -9,7 +9,7 @@ xauth nlist $DISPLAY | sed -e 's/^..../ffff/' | xauth -f $XAUTH nmerge -
 
 xhost +local:root
 
-docker run -it --rm --privileged -d --net=host --ipc=host \
+docker run -it --rm --privileged --net=host --ipc=host \
 	--gpus=all \
 	-e "DISPLAY=$DISPLAY" \
 	-e "QT_X11NO_MITSHM=1" \
